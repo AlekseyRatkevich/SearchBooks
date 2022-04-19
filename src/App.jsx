@@ -13,15 +13,16 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [cards, setCards] = useState([])
   const [totalCards, setTotalCards] = useState(0)
+  const [limit, setLimit] = useState(30)
 
   const handleSubmit = (e) => {
     setLoading(true)
-    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}`)
+    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=40&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
       .then(res => {
         if (res.data.items.length > 0) {
           setCards(res.data.items)
           setLoading(false)
-          console.log(cards)
+          setTotalCards(res.data.items.length)
         }
       })
       .catch(err => {
@@ -78,8 +79,8 @@ function App() {
             </FormGroup>
           </div>
 
-          <div className="d-flex totalCards">
-            <p>Finded: {totalCards} cards</p>
+          <div className="d-flex totalCards justify-content-center">
+            <p>Finded: {totalCards} books</p>
           </div>
 
         </div>
@@ -87,8 +88,21 @@ function App() {
     )
   }
 
+  const loadMoreBtn = () => {
+    if (limit < cards.length) {
+      return (
+        <div className="d-flex justify-content-center mb-5 mt-5" onClick={() => loadMore()}>
+          <button style={{ 'background': 'transparent', 'border': 'none', 'color': 'gray', 'margin': '0 auto' }}>
+            Load More
+          </button>
+        </div>
+      )
+    }
+  }
+
   const handleCards = () => {
-    const items = cards.map((item, index) => {
+    const slice = cards.slice(0, limit)
+    const items = slice.map((item, index) => {
       let thumbnail = ''
       if (item.volumeInfo.imageLinks) {
         thumbnail = item.volumeInfo.imageLinks.thumbnail
@@ -119,9 +133,13 @@ function App() {
       return (
         <div className="container my-5">
           <div className="row">{items}</div>
+          {loadMoreBtn()}
         </div>
       )
     }
+  }
+  const loadMore = () => {
+    setLimit(limit + limit)
   }
 
   return (
