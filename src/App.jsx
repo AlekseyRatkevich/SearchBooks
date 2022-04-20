@@ -28,7 +28,7 @@ function App() {
           setCards(res.data.items)
           setLoading(false)
         } else {
-          toast.error('No books for your request')
+          toast.error('No books for your request / Enable VPN')
           setLoading(false)
           setTotalCards(0)
           setCards([])
@@ -116,7 +116,7 @@ function App() {
   const loadMoreBtn = () => {
     if (limit <= cards.length) {
       return (
-        <div className="d-flex justify-content-center mb-5 mt-5" onClick={() => loadMore()}>
+        <div className="d-flex justify-content-center mb-5" onClick={() => loadMore()}>
           <button style={{ 'background': 'transparent', 'border': 'none', 'color': 'gray', 'margin': '0 auto' }}>
             Load More
           </button>
@@ -139,9 +139,12 @@ function App() {
     })
     const items = sortedItems.map((item, index) => {
       if (item.volumeInfo.hasOwnProperty('publishedDate') === false) {
-        item.volumeInfo['publishedDate'] = ''
+        item.volumeInfo['publishedDate'] = '0000'
       }
-      let category = item.volumeInfo.categories
+      if (item.volumeInfo.hasOwnProperty('categories') === false) {
+        item.volumeInfo['categories'] = ''
+      }
+      let categoryOfItem = item.volumeInfo.categories
       let thumbnail = ''
       if (item.volumeInfo.hasOwnProperty('imageLinks') === false) {
         item.volumeInfo['imageLinks'] = { thumbnail: 'https://t3.ftcdn.net/jpg/04/34/72/82/360_F_434728286_OWQQvAFoXZLdGHlObozsolNeuSxhpr84.jpg' }
@@ -149,11 +152,11 @@ function App() {
         thumbnail = item.volumeInfo.imageLinks.thumbnail
       }
       return (
-        <div className="col-lg-4 mb-3" key={item.id}>
+        <div className="mb-5" key={item.id}>
           <Bookcard 
           thumbnail={thumbnail}
           title = {item.volumeInfo.title}
-          publishedDate={item.volumeInfo.publishedDate.substring(0, 4)}
+          publishedDate={item.volumeInfo.publishedDate}
           pageCount={item.volumeInfo.pageCount}
           language={item.volumeInfo.language}
           authors={item.volumeInfo.authors}
@@ -161,7 +164,7 @@ function App() {
           description={item.volumeInfo.description}
           previewLink={item.volumeInfo.previewLink}
           infoLink={item.volumeInfo.infoLink}
-          category={category}
+          categoryOfItem={categoryOfItem}
           />
         </div>
       )
@@ -175,7 +178,7 @@ function App() {
     } else {
       return (
         <div className="container my-5">
-          <div className="row">{items}</div>
+          <div className="cards-container">{items}</div>
           {loadMoreBtn()}
         </div>
       )

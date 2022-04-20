@@ -6,17 +6,15 @@
 }
 
 .main-image {
-  background:linear-gradient(#00000060, #00000060), url(./assets/img/background.jpg);
+  background: linear-gradient(#00000060, #00000060), url(./assets/img/background.jpg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  height:40vh;
+  height: 40vh;
   color: white;
 }
 
-
 .card-title {
-  overflow: hidden;
   color: rgba(0, 0, 0, 0.85);
   font-weight: 500;
   font-size: 16px;
@@ -24,13 +22,14 @@
   text-overflow: ellipsis;
   margin-bottom: 5px;
   margin-top: 5px;
+  overflow: hidden;
 }
 
 .card-body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  overflow:hidden;
+  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -43,23 +42,32 @@
 .card-category {
   color: rgb(177, 177, 177);
   font-size: 13px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   text-decoration: underline;
+  overflow: hidden;
 }
 
 .card-authors {
   color: rgb(177, 177, 177);
   margin-bottom: 5px;
   font-size: 15px;
+  overflow: hidden;
 }
 
 .btn-link {
   color: gray;
-  text-decoration:none;
+  text-decoration: none;
 }
 
 .card-info {
   margin-left: 30px;
+}
+
+.card-published-date {
+  font-size: 15px;
+  color: rgb(0, 179, 63);
+  margin-bottom: 5px;
+  overflow: hidden;
 }
 
 .info {
@@ -68,4 +76,26 @@
 
 .info-black {
   color: black;
+}
+
+.info-span {
+  color: rgb(0, 179, 63);
+}
+
+.card {
+  box-sizing: border-box;
+  transition: 0.2s ease-in-out;
+  border-radius: 5%;
+  margin-right: 20px !important;
+  margin-left: 20px !important;
+}
+
+.card:hover {
+  transform: scale(0.97);
+}
+
+.cards-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }

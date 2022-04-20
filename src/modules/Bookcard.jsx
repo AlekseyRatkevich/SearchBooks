@@ -2,22 +2,24 @@ import React, { useState } from 'react'
 import {Card, CardTitle, CardImg, CardBody, Button, Modal} from 'reactstrap'
 
 const Bookcard = ({
-  thumbnail, title, publishedDate,  pageCount, language, description, authors, publisher, previewLink, infoLink, category }) => {
+  thumbnail, title, publishedDate, pageCount, language, description, authors, publisher, previewLink, infoLink, categoryOfItem }) => {
   const [modal, setModal] = useState(false)
   const toggle = () => setModal(!modal)
-
+  if (publishedDate === '0000') {
+    publishedDate = ''
+  }
   return (
-    <Card className="m-auto card" style={{'width': '233px', 'height': '400px'}}>
+    <Card className="m-auto card" style={{ 'width': '233px', 'height': '350px', cursor: 'pointer' }} onClick={toggle}>
           <CardImg top style=
           {{ width: '100%', 'height': '243px' }}
           src={thumbnail}
           alt={title}/>
       <CardBody>
-        <div className='card-authors'>{authors}</div>
         <CardTitle className='card-title'>{title}</CardTitle>
-        <div className="card-published-date">{publishedDate}</div>
-        <div className="card-category">{category}</div>
-        <Button onClick={toggle}>More info</Button>
+        <div className='card-authors'>{authors}</div>
+        <div className="card-published-date">{publishedDate.substring(0, 4)}</div>
+        <div className="card-category">{categoryOfItem}</div>
+        {/* <Button onClick={toggle} style={{overflow: 'hidden'}}>More info</Button> */}
       </CardBody>
       <Modal isOpen={modal} toggle={toggle}>
         <div className='modal-header d-flex justify-content-center'>
@@ -37,11 +39,12 @@ const Bookcard = ({
           <div className='d-flex justify-content-between'>
             <img src={thumbnail} alt={title} style={{ height: '233px', width:'50%'}} />
             <div className='card-info'>
-              <p>Page Count: {pageCount}</p>
-              <p>Language : {language}</p>
-              <p>Authors : {authors}</p>
-              <p>Publisher : {publisher}</p>
-              <p>Categories : {category}</p>
+              <p><span className='info-span'>Page Count :</span> {pageCount}</p>
+              <p><span className='info-span'>Language :</span> {language}</p>
+              <p><span className='info-span'>Authors :</span> {authors}</p>
+              <p><span className='info-span'>Publisher :</span> {publisher}</p>
+              <p><span className='info-span'>Published date:</span> {publishedDate}</p>
+              <p><span className='info-span'>Categories :</span> {categoryOfItem}</p>
             </div>
           </div>
           <div className='mt-3'>{description}</div>
