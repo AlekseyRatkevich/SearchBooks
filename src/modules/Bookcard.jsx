@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {Card, CardTitle, CardImg, CardBody, Button, Modal} from 'reactstrap'
 
 const Bookcard = ({
-  thumbnail, title, publishedDate, pageCount, language, description, authors, publisher, previewLink, infoLink, categoryOfItem }) => {
+  thumbnail, title, publishedDate, pageCount, language, description, authors, publisher, previewLink, infoLink, categoryOfItem, firstCategory }) => {
   const [modal, setModal] = useState(false)
   const toggle = () => setModal(!modal)
   if (publishedDate === '0000') {
@@ -18,12 +18,11 @@ const Bookcard = ({
         <CardTitle className='card-title'>{title}</CardTitle>
         <div className='card-authors'>{authors}</div>
         <div className="card-published-date">{publishedDate.substring(0, 4)}</div>
-        <div className="card-category">{categoryOfItem}</div>
-        {/* <Button onClick={toggle} style={{overflow: 'hidden'}}>More info</Button> */}
+        <div className="card-category">{firstCategory}</div>
       </CardBody>
-      <Modal isOpen={modal} toggle={toggle}>
-        <div className='modal-header d-flex justify-content-center'>
-          <h5 className='modal-title text-center' id='exampleModalLabel'>
+      <Modal isOpen={modal} toggle={toggle} className="modal-container">
+        <div className='modal-header'>
+          <h5 className='modal-title text-center'>
             {title}
           </h5>
           <button
@@ -32,22 +31,22 @@ const Bookcard = ({
             type='button'
             onClick={toggle}
           >
-            <span aria-hidden={true} className='close'>X</span>
+            <i className="fa-solid fa-xmark close"></i>
           </button>
         </div>
         <div className='modal-body'>
           <div className='d-flex justify-content-between'>
             <img src={thumbnail} alt={title} style={{ height: '233px', width:'50%'}} />
             <div className='card-info'>
-              <p><span className='info-span'>Page Count :</span> {pageCount}</p>
-              <p><span className='info-span'>Language :</span> {language}</p>
               <p><span className='info-span'>Authors :</span> {authors}</p>
+              <p><span className='info-span'>Categories :</span> {categoryOfItem}</p>
+              <p><span className='info-span'>Language :</span> {language}</p>
+              <p><span className='info-span'>Page Count :</span> {pageCount}</p>
               <p><span className='info-span'>Publisher :</span> {publisher}</p>
               <p><span className='info-span'>Published date:</span> {publishedDate}</p>
-              <p><span className='info-span'>Categories :</span> {categoryOfItem}</p>
             </div>
           </div>
-          <div className='mt-3'>{description}</div>
+          <div className='mt-3 card-description'>{description}</div>
         </div>
         <div className='modal-footer'>
           <div>

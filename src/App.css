@@ -79,7 +79,7 @@
 }
 
 .info-span {
-  color: rgb(0, 179, 63);
+  color: #0A58CA;
 }
 
 .card {
@@ -88,6 +88,8 @@
   border-radius: 5%;
   margin-right: 20px !important;
   margin-left: 20px !important;
+  -webkit-box-shadow: 10px 0px 8px -7px rgba(0, 0, 0, 0.4);
+  box-shadow: 10px 0px 8px -7px rgba(0, 0, 0, 0.4);
 }
 
 .card:hover {
@@ -98,4 +100,27 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.close {
+  transition: 0.2s ease-in-out;
+  font-size: 28px;
+  color: gray;
+}
+
+.close:hover {
+  color: rgb(80, 80, 80);
+}
+
+.card-description {
+  max-height: 200px;
+}
+
+.page {
+  min-height: 100vh !important;
+}
+
+.modal-container {
+  -webkit-box-shadow: 10px 13px 17px -7px rgba(0, 0, 0, 0.46);
+  box-shadow: 10px 13px 17px -7px rgba(0, 0, 0, 0.46);
 }

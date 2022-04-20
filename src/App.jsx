@@ -97,6 +97,7 @@ function App() {
   }
 
   const addMoreCards = () => {
+    setLimit(limit + 30)
     axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex + limit}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
       .then(res => {
         if (res.data.items.length > 0) {
@@ -108,15 +109,10 @@ function App() {
       })
   }
 
-  const loadMore = () => {
-    setLimit(limit + 30)
-    addMoreCards()
-  }
-
   const loadMoreBtn = () => {
     if (limit <= cards.length) {
       return (
-        <div className="d-flex justify-content-center mb-5" onClick={() => loadMore()}>
+        <div className="d-flex justify-content-center mb-5" onClick={() => addMoreCards()}>
           <button style={{ 'background': 'transparent', 'border': 'none', 'color': 'gray', 'margin': '0 auto' }}>
             Load More
           </button>
@@ -144,6 +140,7 @@ function App() {
       if (item.volumeInfo.hasOwnProperty('categories') === false) {
         item.volumeInfo['categories'] = ''
       }
+      let firstCategory = item.volumeInfo.categories.toString().split('&')[0]
       let categoryOfItem = item.volumeInfo.categories
       let thumbnail = ''
       if (item.volumeInfo.hasOwnProperty('imageLinks') === false) {
@@ -151,6 +148,7 @@ function App() {
       } else {
         thumbnail = item.volumeInfo.imageLinks.thumbnail
       }
+
       return (
         <div className="mb-5" key={item.id}>
           <Bookcard 
@@ -164,6 +162,7 @@ function App() {
           description={item.volumeInfo.description}
           previewLink={item.volumeInfo.previewLink}
           infoLink={item.volumeInfo.infoLink}
+          firstCategory={firstCategory}
           categoryOfItem={categoryOfItem}
           />
         </div>
@@ -184,9 +183,9 @@ function App() {
       )
     }
   }
-
+  
   return (
-    <div className="w-100 h-100">
+    <div className="w-100 h-100 page">
       {header()}
       {handleCards()}
       <ToastContainer />
