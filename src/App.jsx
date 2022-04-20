@@ -14,15 +14,23 @@ function App() {
   const [cards, setCards] = useState([])
   const [totalCards, setTotalCards] = useState(0)
   const [limit, setLimit] = useState(30)
+  const [startIndex, setStartIndex] = useState(0)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = () => {
+    setStartIndex(0)
+    setLimit(30)
     setLoading(true)
-    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=40&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
+    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
       .then(res => {
-        if (res.data.items.length > 0) {
+        if (res.data.totalItems > 0) {
+          setTotalCards(res.data.totalItems)
           setCards(res.data.items)
           setLoading(false)
-          setTotalCards(res.data.items.length)
+        } else {
+          toast.error('No books for your request')
+          setLoading(false)
+          setTotalCards(0)
+          setCards([])
         }
       })
       .catch(err => {
@@ -36,6 +44,7 @@ function App() {
   }
   const onChangeSorting = (e) => {
     setSorting(e.target.value)
+    console.log(e.target.value)
   }
   const onChangeQuery = (e) => {
     setQuery(e.target.value)
@@ -78,18 +87,33 @@ function App() {
               </Input>
             </FormGroup>
           </div>
-
           <div className="d-flex totalCards justify-content-center">
             <p>Finded: {totalCards} books</p>
           </div>
-
         </div>
       </div>
     )
   }
 
+  const addMoreCards = () => {
+    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex + limit}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
+      .then(res => {
+        if (res.data.items.length > 0) {
+          setCards(cards.concat(res.data.items))
+        }
+      })
+      .catch(err => {
+        toast.error(`${err.response.data.error.message}`)
+      })
+  }
+
+  const loadMore = () => {
+    setLimit(limit + 30)
+    addMoreCards()
+  }
+
   const loadMoreBtn = () => {
-    if (limit < cards.length) {
+    if (limit <= cards.length) {
       return (
         <div className="d-flex justify-content-center mb-5 mt-5" onClick={() => loadMore()}>
           <button style={{ 'background': 'transparent', 'border': 'none', 'color': 'gray', 'margin': '0 auto' }}>
@@ -103,6 +127,8 @@ function App() {
   const handleCards = () => {
     const slice = cards.slice(0, limit)
     const items = slice.map((item, index) => {
+      // console.log(item.volumeInfo.publishedDate)
+      let category = item.volumeInfo.categories
       let thumbnail = ''
       if (item.volumeInfo.imageLinks) {
         thumbnail = item.volumeInfo.imageLinks.thumbnail
@@ -119,6 +145,7 @@ function App() {
           description={item.volumeInfo.description}
           previewLink={item.volumeInfo.previewLink}
           infoLink={item.volumeInfo.infoLink}
+          category={category}
           />
         </div>
       )
@@ -137,9 +164,6 @@ function App() {
         </div>
       )
     }
-  }
-  const loadMore = () => {
-    setLimit(limit + limit)
   }
 
   return (

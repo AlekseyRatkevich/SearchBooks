@@ -2,18 +2,20 @@ import React, { useState } from 'react'
 import {Card, CardTitle, CardImg, CardBody, Button, Modal} from 'reactstrap'
 
 const Bookcard = ({
-  thumbnail, title, pageCount, language, description, authors, publisher, previewLink, infoLink }) => {
+  thumbnail, title, pageCount, language, description, authors, publisher, previewLink, infoLink, category }) => {
   const [modal, setModal] = useState(false)
   const toggle = () => setModal(!modal)
 
   return (
-    <Card className="m-auto" style={{width: '233px'}}>
+    <Card className="m-auto card" style={{'width': '233px', 'height': '400px'}}>
           <CardImg top style=
-          {{ width: '100%', height: '233px' }}
+          {{ width: '100%', 'height': '243px' }}
           src={thumbnail}
           alt={title}/>
       <CardBody>
+        <div className='card-authors'>{authors}</div>
         <CardTitle className='card-title'>{title}</CardTitle>
+        <div className="card-category">{category}</div>
         <Button onClick={toggle}>More info</Button>
       </CardBody>
       <Modal isOpen={modal} toggle={toggle}>
@@ -31,19 +33,20 @@ const Bookcard = ({
           </button>
         </div>
         <div className='modal-body'>
-          <div className='d-flex justify-content-between ml-3'>
-            <img src={thumbnail} alt={title} style={{ height: '233px' }} />
-            <div>
+          <div className='d-flex justify-content-between'>
+            <img src={thumbnail} alt={title} style={{ height: '233px', width:'50%'}} />
+            <div className='card-info'>
               <p>Page Count: {pageCount}</p>
               <p>Language : {language}</p>
               <p>Authors : {authors}</p>
               <p>Publisher : {publisher}</p>
+              <p>Categories : {category}</p>
             </div>
           </div>
           <div className='mt-3'>{description}</div>
         </div>
         <div className='modal-footer'>
-          <div className='left-silde'>
+          <div>
             <a
               href={previewLink}
               className='btn-link'
@@ -56,7 +59,7 @@ const Bookcard = ({
             </a>
           </div>
           <div className='divider'></div>
-          <div className='right-silde'>
+          <div>
             <a
               href={infoLink}
               className='btn-link'
