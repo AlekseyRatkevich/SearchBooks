@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {Card, CardTitle, CardImg, CardBody, Button, Modal} from 'reactstrap'
 
 const Bookcard = ({
-  thumbnail, title, pageCount, language, description, authors, publisher, previewLink, infoLink, category }) => {
+  thumbnail, title, publishedDate,  pageCount, language, description, authors, publisher, previewLink, infoLink, category }) => {
   const [modal, setModal] = useState(false)
   const toggle = () => setModal(!modal)
 
@@ -15,6 +15,7 @@ const Bookcard = ({
       <CardBody>
         <div className='card-authors'>{authors}</div>
         <CardTitle className='card-title'>{title}</CardTitle>
+        <div className="card-published-date">{publishedDate}</div>
         <div className="card-category">{category}</div>
         <Button onClick={toggle}>More info</Button>
       </CardBody>

@@ -17,6 +17,7 @@ function App() {
   const [startIndex, setStartIndex] = useState(0)
 
   const handleSubmit = () => {
+    setSorting('Relevance')
     setStartIndex(0)
     setLimit(30)
     setLoading(true)
@@ -44,7 +45,6 @@ function App() {
   }
   const onChangeSorting = (e) => {
     setSorting(e.target.value)
-    console.log(e.target.value)
   }
   const onChangeQuery = (e) => {
     setQuery(e.target.value)
@@ -84,6 +84,7 @@ function App() {
               <Input type={'select'} value={sorting} onChange={onChangeSorting} id='sorting'>
                 <option value={'Relevance'}>Relevance</option>
                 <option value={'Newest'}>Newest</option>
+                <option value={'Oldest'}>Oldest</option>
               </Input>
             </FormGroup>
           </div>
@@ -126,18 +127,33 @@ function App() {
 
   const handleCards = () => {
     const slice = cards.slice(0, limit)
-    const items = slice.map((item, index) => {
-      // console.log(item.volumeInfo.publishedDate)
+    const sortedItems = slice.sort((a, b) => {
+      if (sorting === 'Newest') {
+        return parseInt(b.volumeInfo.publishedDate.substring(0, 4)) - parseInt(a.volumeInfo.publishedDate.substring(0, 4))
+      } else if (sorting === 'Oldest') {
+        return parseInt(a.volumeInfo.publishedDate.substring(0, 4)) - parseInt(b.volumeInfo.publishedDate.substring(0, 4))
+      }
+      else {
+        return slice
+      }
+    })
+    const items = sortedItems.map((item, index) => {
+      if (item.volumeInfo.hasOwnProperty('publishedDate') === false) {
+        item.volumeInfo['publishedDate'] = ''
+      }
       let category = item.volumeInfo.categories
       let thumbnail = ''
-      if (item.volumeInfo.imageLinks) {
+      if (item.volumeInfo.hasOwnProperty('imageLinks') === false) {
+        item.volumeInfo['imageLinks'] = { thumbnail: 'https://t3.ftcdn.net/jpg/04/34/72/82/360_F_434728286_OWQQvAFoXZLdGHlObozsolNeuSxhpr84.jpg' }
+      } else {
         thumbnail = item.volumeInfo.imageLinks.thumbnail
       }
       return (
         <div className="col-lg-4 mb-3" key={item.id}>
           <Bookcard 
-          thumbnail={thumbnail} 
+          thumbnail={thumbnail}
           title = {item.volumeInfo.title}
+          publishedDate={item.volumeInfo.publishedDate.substring(0, 4)}
           pageCount={item.volumeInfo.pageCount}
           language={item.volumeInfo.language}
           authors={item.volumeInfo.authors}
