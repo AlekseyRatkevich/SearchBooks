@@ -1,10 +1,10 @@
-import './App.css'
 import React, { useState } from 'react'
 import { InputGroup, Input, Button, FormGroup, Label, Spinner } from 'reactstrap'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import axios from 'axios'
 import Bookcard from './modules/Bookcard'
+import './App.css'
+import 'animate.css'
 
 function App() {
   const [category, setCategory] = useState('All')
@@ -16,60 +16,73 @@ function App() {
   const [limit, setLimit] = useState(30)
   const [startIndex, setStartIndex] = useState(0)
 
-  const handleSubmit = () => {
+  function fetchCards() {
     setSorting('Relevance')
+    setCards([])
     setStartIndex(0)
-    setLimit(30)
     setLoading(true)
-    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
-      .then(res => {
-        if (res.data.totalItems > 0) {
-          setTotalCards(res.data.totalItems)
-          setCards(res.data.items)
+    setLimit(30)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.totalItems > 0) {
+          setTotalCards(data.totalItems)
           setLoading(false)
+          if (category === 'All') {
+            setCards(data.items)
+          } else {
+            data.items.forEach(item => {
+              if (item.volumeInfo.hasOwnProperty('categories')) {
+                if (item.volumeInfo.categories.toString().includes(category)) {
+                  setCards(cards => [...cards, item])
+                  setLoading(false)
+                }
+              }
+            })
+          }
         } else {
-          toast.error('No books for your request / Enable VPN')
           setLoading(false)
           setTotalCards(0)
           setCards([])
+          toast.error('No books for your request / Enable VPN / Too many requests a day')
         }
       })
       .catch(err => {
-        setLoading(true)
-        toast.error(`${err.response.data.error.message}`)
+        setLoading(false)
+        toast.error(`${err.data.error.message}`)
       })
   }
 
-  const onChangeCategory = (e) => {
+  function onChangeCategory(e) {
     setCategory(e.target.value)
   }
-  const onChangeSorting = (e) => {
+  function onChangeSorting(e) {
     setSorting(e.target.value)
   }
-  const onChangeQuery = (e) => {
+  function onChangeQuery(e) {
     setQuery(e.target.value)
   }
-  const handleEnterPressed = (e) => {
+  function handleEnterPressed(e) {
     if (e.key === 'Enter') {
-      handleSubmit()
+      fetchCards()
     }
   }
 
-  const header = () => {
+  function Header() {
     return (
       <div className="d-flex justify-content-center align-items-center flex-column main-image">
         <h1 className="display-5">Search for books</h1>
         <div style={{ width: '60%' }}>
           <InputGroup size='lg' className='mb-3'>
             <Input value={query} onChange={onChangeQuery} placeholder='Type here' onKeyPress={handleEnterPressed} />
-            <Button color='secondary' onClick={handleSubmit}>
+            <Button color='secondary' onClick={fetchCards}>
               <i className='fas fa-search'></i>
             </Button>
           </InputGroup>
           <div className="d-flex justify-content-center">
             <FormGroup style={{ 'margin-right': '2rem' }}>
               <Label for='categories'>Categories</Label>
-              <Input type={'select'} value={category} onChange={onChangeCategory} id='categories'>
+              <Input type={'select'} value={category} onChange={onChangeCategory}>
                 <option value={'All'}>All</option>
                 <option value={'Art'}>Art</option>
                 <option value={'Biography'}>Biography</option>
@@ -81,7 +94,7 @@ function App() {
             </FormGroup>
             <FormGroup>
               <Label for='categories'>Sorting by</Label>
-              <Input type={'select'} value={sorting} onChange={onChangeSorting} id='sorting'>
+              <Input type={'select'} value={sorting} onChange={onChangeSorting}>
                 <option value={'Relevance'}>Relevance</option>
                 <option value={'Newest'}>Newest</option>
                 <option value={'Oldest'}>Oldest</option>
@@ -96,44 +109,45 @@ function App() {
     )
   }
 
-  const addMoreCards = () => {
+  function addMoreCards() {
     setLimit(limit + 30)
-    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex + limit}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
-      .then(res => {
-        if (res.data.items.length > 0) {
-          setCards(cards.concat(res.data.items))
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&startIndex=${startIndex + limit}&maxResults=30&key=AIzaSyAJWywK7LvQo2J6I0Vws0UxsmzZHFCzsVg`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.totalItems > 0) {
+          setCards(cards.concat(data.items))
         }
       })
       .catch(err => {
-        toast.error(`${err.response.data.error.message}`)
+        toast.error(`${err.data.error.message}`)
       })
   }
 
-  const loadMoreBtn = () => {
-    if (limit <= cards.length) {
+  function loadMoreBtn() {
+    if (cards.length < totalCards) {
       return (
         <div className="d-flex justify-content-center mb-5" onClick={() => addMoreCards()}>
-          <button style={{ 'background': 'transparent', 'border': 'none', 'color': 'gray', 'margin': '0 auto' }}>
-            Load More
-          </button>
+          <button style={{ 'background': 'transparent', 'border': 'none', 'color': 'gray', 'margin': '0 auto' }}>Load More</button>
         </div>
       )
     }
   }
 
-  const handleCards = () => {
-    const slice = cards.slice(0, limit)
+  function handleCards() {
+    let slice = cards.slice(0, limit)
     const sortedItems = slice.sort((a, b) => {
       if (sorting === 'Newest') {
         return parseInt(b.volumeInfo.publishedDate.substring(0, 4)) - parseInt(a.volumeInfo.publishedDate.substring(0, 4))
-      } else if (sorting === 'Oldest') {
+      }
+      else if (sorting === 'Oldest') {
         return parseInt(a.volumeInfo.publishedDate.substring(0, 4)) - parseInt(b.volumeInfo.publishedDate.substring(0, 4))
       }
       else {
-        return slice
+        return cards
       }
     })
-    const items = sortedItems.map((item, index) => {
+
+    const items = sortedItems.map(item => {
       if (item.volumeInfo.hasOwnProperty('publishedDate') === false) {
         item.volumeInfo['publishedDate'] = '0000'
       }
@@ -148,10 +162,9 @@ function App() {
       } else {
         thumbnail = item.volumeInfo.imageLinks.thumbnail
       }
-
       return (
-        <div className="mb-5" key={item.id}>
-          <Bookcard 
+        <div className="mb-5 animate__animated animate__fadeInUp" key={item.id}>
+          <Bookcard
           thumbnail={thumbnail}
           title = {item.volumeInfo.title}
           publishedDate={item.volumeInfo.publishedDate}
@@ -183,10 +196,9 @@ function App() {
       )
     }
   }
-  
   return (
-    <div className="w-100 h-100 page">
-      {header()}
+    <div>
+      {Header()}
       {handleCards()}
       <ToastContainer />
     </div>
